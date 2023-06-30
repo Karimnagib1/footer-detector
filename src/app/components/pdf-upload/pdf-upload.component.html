@@ -1,0 +1,10 @@
+<form [formGroup]="pdfUploadForm" (ngSubmit)="onSubmit()">
+  <input
+    type="file"
+    formControlName="pdf"
+    accept=".pdf"
+    (change)="onFileSelect($event)"
+  />
+  <button type="submit" [disabled]="!pdfUploadForm.valid">Define Footer</button>
+</form>
+<canvas #pdfCanvas></canvas>
