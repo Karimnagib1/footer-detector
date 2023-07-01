@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as pdfjsLib from 'pdfjs-dist';
+import { PdfService } from 'src/app/services/pdf.service';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';
 
@@ -12,13 +13,17 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';
   styleUrls: ['./pdf-upload.component.css']
 })
 export class PdfUploadComponent {
-  @ViewChild('pdfCanvas') pdfCanvas!: ElementRef<HTMLCanvasElement>;
 
+  @ViewChild('pdfCanvas') pdfCanvas!: ElementRef<HTMLCanvasElement>;
   @Output() pdfUrlChange = new EventEmitter<string>();
+  @Output() viewLineToggle = new EventEmitter<boolean>();
+  @Output() yRatioChange = new EventEmitter<number>();
+
 
   pdfUploadForm!: FormGroup;
-  constructor(
-           ) {}
+  file?: File;
+
+  constructor( private pdf:PdfService ) {}
 
   ngOnInit() {
     this.pdfUploadForm = new FormGroup({
@@ -27,42 +32,27 @@ export class PdfUploadComponent {
   }
 
   onFileSelect(event: any) {
+    this.viewLineToggle.emit(false);
     const file:File = event.target.files[0];
+    this.file = file;
     const reader = new FileReader();
     reader.onload = (event) => {
-
-      // this.pdfUrlChange.emit(event.target?.result as string);
-      pdfjsLib.getDocument({ url: event.target?.result as string }).promise.then(pdf => {
-        pdf.getPage(1).then(page => {
-          const viewport = page.getViewport({ scale: 1 });
-          const canvas = this.pdfCanvas.nativeElement;
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-          page.render({ canvasContext: context, viewport: viewport }).promise.then(() => {
-            // draw line on canvas
-            context.beginPath();
-            context.moveTo(100, 100);
-            context.lineTo(200, 200);
-            context.stroke();
-            // export modified PDF file
-            const dataUri: string= canvas.toDataURL('application/pdf');
-            // this.pdfUrlChange.emit(dataUri);
-            // this.pdfUrlChange.emit(dataUri as string);
-            // const link = document.createElement('a');
-            // link.href = dataUri;
-            // link.download = file.name;
-            // link.click();
-          });
-        });
-      });
-
+      this.pdfUrlChange.emit(event.target?.result as string);
     };
     reader.readAsDataURL(file);
   }
 
   onSubmit() {
-
+    console.log(this.file);
+    this.pdf.postCheckPdf(this.file!).subscribe(response => {
+      console.log(response);
+      this.yRatioChange.emit(response.y_ratio);
+      this.viewLineToggle.emit(true);
+      // handle response from server
+    }, error => {
+      console.error(error);
+      // handle error
+    });
   }
 
 }

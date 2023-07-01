@@ -7,9 +7,19 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   pdfUrl!: string;
+  viewLine: boolean = false;
+  yRatio!: number;
 
   onPdfUrlChange(pdfUrl: string) {
     this.pdfUrl = pdfUrl;
+  }
+
+  onViewLineToggle(value: boolean){
+    console.log("working");
+    this.viewLine = value;
+  }
+  onYRatioChange(y: number){
+    this.yRatio = y;
   }
 
 }
