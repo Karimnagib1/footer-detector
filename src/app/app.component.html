@@ -1,4 +1,4 @@
 <div class="app">
-  <app-pdf-upload (pdfUrlChange)="onPdfUrlChange($event)" (viewLineToggle)="onViewLineToggle($event)" (yRatioChange)="onYRatioChange($event)" ></app-pdf-upload>
+  <app-pdf-upload (pdfUrlChange)="onPdfUrlChange($event)" (yRatioChange)="onYRatioChange($event)" ></app-pdf-upload>
   <app-pdf-viewer [pdfUrl]="pdfUrl" class= "pdf-viewer" [viewLine]="viewLine" [yRatio]="yRatio"></app-pdf-viewer>
 </div>

@@ -9,7 +9,7 @@ interface pdfCheckResponse {
   providedIn: 'root'
 })
 export class PdfService {
-  private apiUrl = "http://localhost:8000/"
+  private apiUrl = "http://16.170.243.26/"
   constructor(
     private http:HttpClient
   ) {

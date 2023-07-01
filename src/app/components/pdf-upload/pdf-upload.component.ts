@@ -15,14 +15,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.js';
 export class PdfUploadComponent {
 
   @ViewChild('pdfCanvas') pdfCanvas!: ElementRef<HTMLCanvasElement>;
-  @Output() pdfUrlChange = new EventEmitter<string>();
-  @Output() viewLineToggle = new EventEmitter<boolean>();
+  @Output() pdfUrlChange = new EventEmitter<{res: string, line: boolean}>();
   @Output() yRatioChange = new EventEmitter<number>();
 
 
   pdfUploadForm!: FormGroup;
   file?: File;
-
+  pdfUrl?: string;
   constructor( private pdf:PdfService ) {}
 
   ngOnInit() {
@@ -32,22 +31,24 @@ export class PdfUploadComponent {
   }
 
   onFileSelect(event: any) {
-    this.viewLineToggle.emit(false);
     const file:File = event.target.files[0];
     this.file = file;
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      this.pdfUrlChange.emit(event.target?.result as string);
+      this.pdfUrl = event.target?.result as string;
+      this.pdfUrlChange.emit({res: this.pdfUrl, line: false});
     };
     reader.readAsDataURL(file);
+
   }
 
   onSubmit() {
-    console.log(this.file);
     this.pdf.postCheckPdf(this.file!).subscribe(response => {
-      console.log(response);
+
+      this.pdfUrlChange.emit({res: this.pdfUrl!, line: true});
+
       this.yRatioChange.emit(response.y_ratio);
-      this.viewLineToggle.emit(true);
       // handle response from server
     }, error => {
       console.error(error);

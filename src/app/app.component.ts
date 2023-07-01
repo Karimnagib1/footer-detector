@@ -10,14 +10,12 @@ export class AppComponent {
   viewLine: boolean = false;
   yRatio!: number;
 
-  onPdfUrlChange(pdfUrl: string) {
-    this.pdfUrl = pdfUrl;
+  onPdfUrlChange(pdfUrl: {res: string, line: boolean}) {
+    this.pdfUrl = pdfUrl.res;
+    this.viewLine = pdfUrl.line;
   }
 
-  onViewLineToggle(value: boolean){
-    console.log("working");
-    this.viewLine = value;
-  }
+
   onYRatioChange(y: number){
     this.yRatio = y;
   }
